@@ -1,6 +1,9 @@
+'use strict'
+
 require('dotenv').config();
 
 var ActiveDirectory = require('activedirectory');
+const { promisify } = require('util');
 
 class LDAP {
   constructor() {
@@ -20,35 +23,37 @@ class LDAP {
     console.log('connected');
   }
 
-  getUser(username) {
-    this.ad.findUsers(username, true, function(err, users) {
-      if (err) {
-        console.log('ERROR: ' +JSON.stringify(err));
-        return;
-      }
-     
-      if ((! users) || (users.length == 0)) {
-        console.log('No users found.');
-      }
-
-      console.log('findUsers: '+JSON.stringify(users));
-    });
+  async promiseFunction(functionName) {
+    const newPromiseFunction = await promisify(functionName).bind(this.ad);
+    return newPromiseFunction;
   }
 
-  authenticateUser(username, password) {
-    ad.authenticate(username, password, function(err, auth) {
-      if (err) {
-        console.log('ERROR: '+JSON.stringify(err));
-        return;
+  async authenticateUser(username, password) {
+    if (username) {
+      const authenticateAsync = await this.promiseFunction(this.ad.authenticate);
+      if (authenticateAsync) {
+        return await authenticateAsync(username, password);
       }
-      
-      if (auth) {
-        console.log('Authenticated!');
-      } else {
-        console.log('Authentication failed!');
+    }
+  };
+
+  async checkUser(username) {
+    if (username) {
+      const userExistsAsync = await this.promiseFunction(this.ad.userExists);
+      if (userExistsAsync) {
+        return await userExistsAsync(username);
       }
-    });
-  }
+    }
+  };
+
+  async getUser(username) {
+    if (username) {
+      const findUserAsync = await this.promiseFunction(this.ad.findUser);
+      if (findUserAsync) {
+        return await findUserAsync(username);
+      }
+    }
+  };
 }
 
 module.exports = new LDAP();
