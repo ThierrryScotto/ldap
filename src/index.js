@@ -1,9 +1,10 @@
 'use strict'
 
 const router         = require('./router/index');
-const authController = require('./controllers/authController');
+const ldapController = require('./controllers/ldapController');
 
-router.post('/authenticate', authController.auth);
+router.post('/user/authenticate', ldapController.auth);
+router.get('/users/group/:groupName', ldapController.getGroupMembershipForGroup);
 
 
 

@@ -28,6 +28,15 @@ const auth = async (req, res) => {
   return res.status(200).send({ user : responseBody });
 };
 
+const getGroupMembershipForGroup = async (req, res) => {
+  const groupName = req.params;
+
+  const members = ldap.getGroupMembershipForGroup(groupName);
+
+  return res.status(200).send({ members });
+}
+
 module.exports = {
-  auth
+  auth,
+  getGroupMembershipForGroup
 }

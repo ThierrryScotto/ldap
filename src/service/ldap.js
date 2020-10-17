@@ -54,6 +54,15 @@ class LDAP {
       }
     }
   };
+
+  async getGroupMembershipForGroup(groupName) {
+    if (groupName) {
+      const getGroupMembershipForGroupAsync = await this.promiseFunction(this.ad.getGroupMembershipForGroup);
+      if (getGroupMembershipForGroupAsync) {
+        return await getGroupMembershipForGroupAsync(groupName);
+      }
+    }
+  }
 }
 
 module.exports = new LDAP();
